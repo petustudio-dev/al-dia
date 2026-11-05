@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Al Día</title>
+<meta name="description" content="Noticias de Colombia y el mundo, resumidas y actualizadas dos veces al día.">
+<meta name="theme-color" content="#111418">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Al Día">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:title" content="Al Día">
+<meta property="og:description" content="Noticias de Colombia y el mundo, resumidas y actualizadas dos veces al día.">
+<meta property="og:image" content="icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,500&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: periódico digital de una columna, móvil primero.
+   Cabecera → portada (nota más importante) → indicadores → 60 segundos → agenda → herramientas → notas. */
+:root{
+  --paper:#eef0f3;
+  --card:#ffffff;
+  --ink:#111418;
+  --muted:#5d6573;
+  --rule:#d9dde3;
+  --accent:#c42d1c;
+  --accent-soft:#fbe8e5;
+  --tint:#f5f6f8;
+  --why:#edf2f9;
+  --i5:#d1291a; --i4:#e3731a; --i3:#c9a227; --i2:#7c8594; --i1:#aab1bc;
+  --good:#1b7a48; --bad:#c42d1c;
+  --display:"Newsreader", Georgia, "Times New Roman", serif;
+  --body:"Public Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r:14px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0b0d11; --card:#151820; --ink:#eceef2; --muted:#9aa2af; --rule:#262b35;
+    --accent:#ff6a52; --accent-soft:#3b1b16; --tint:#1b1f28; --why:#18202d;
+    --i5:#ff5a47; --i4:#ff9a3d; --i3:#e8c547; --i2:#8d96a5; --i1:#5d6573;
+    --good:#4cc38a; --bad:#ff6a52; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0b0d11; --card:#151820; --ink:#eceef2; --muted:#9aa2af; --rule:#262b35;
+  --accent:#ff6a52; --accent-soft:#3b1b16; --tint:#1b1f28; --why:#18202d;
+  --i5:#ff5a47; --i4:#ff9a3d; --i3:#e8c547; --i2:#8d96a5; --i1:#5d6573;
+  --good:#4cc38a; --bad:#ff6a52; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+a{color:inherit}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 80px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r)}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* Masthead */
+.mast{padding:18px 0 12px;display:flex;flex-direction:column;gap:10px}
+.mast-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-family:var(--display);font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:.9;margin:0}
+.logo i{font-style:italic;font-weight:500;color:var(--accent)}
+.dateline{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:13px;color:var(--muted);border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);padding:7px 0}
+.dateline b{color:var(--ink);font-weight:700}
+.live{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--ink)}
+.live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 25%,transparent)}
+.live.stale::before{background:var(--bad);box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 25%,transparent)}
+.btn{border:1px solid var(--rule);background:var(--card);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn:disabled{opacity:.6;cursor:default}
+
+/* Progress */
+.progress{height:4px;background:var(--rule);border-radius:4px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* Hero */
+.hero{margin:16px 0;padding:20px;display:flex;flex-direction:column;gap:10px;border-top:5px solid var(--i5);position:relative}
+.hero h2{font-family:var(--display);font-size:clamp(26px,6.5vw,36px);line-height:1.08;margin:0;text-wrap:balance;font-weight:700;letter-spacing:-.01em}
+.hero p{margin:0;font-size:17px;color:var(--ink);max-width:62ch}
+
+/* Indicators */
+.ticker{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:0 0 16px}
+.tick{padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:end}
+.tick .l{grid-column:1/-1}
+.tick .v{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tick .c{grid-column:1/-1;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tick .c.up{color:var(--bad)} .tick .c.down{color:var(--good)}
+.spark{width:84px;height:30px}
+
+/* Brief */
+.brief{padding:18px 18px 16px;margin-bottom:16px}
+.brief-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.brief h3{font-family:var(--display);font-size:24px;margin:0;font-weight:700}
+.brief ol{margin:0;padding:0;list-style:none;counter-reset:b;display:flex;flex-direction:column;gap:10px}
+.brief li{counter-increment:b;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.brief li::before{content:counter(b);font-family:var(--display);font-weight:700;font-size:22px;line-height:1.1;color:var(--accent)}
+
+/* Agenda */
+.agenda{margin-bottom:18px}
+.agenda .row{display:flex;gap:10px;overflow-x:auto;padding:8px 2px 6px;scrollbar-width:none}
+.agenda .row::-webkit-scrollbar{display:none}
+.ag{flex:0 0 190px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.ag .d{display:flex;align-items:baseline;gap:6px}
+.ag .dn{font-family:var(--display);font-size:30px;font-weight:700;line-height:1}
+.ag .dm{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.ag .dw{font-size:12px;color:var(--muted);margin-left:auto}
+.ag .t{font-weight:700;font-size:14px;line-height:1.3}
+.ag .n{font-size:12.5px;color:var(--muted)}
+
+/* Tools */
+.tools{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:10px 0 8px;margin:0 -16px;padding-left:16px;padding-right:16px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--rule)}
+.tools-row{display:flex;gap:8px;align-items:center}
+.search{flex:1;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--rule);border-radius:999px;padding:7px 14px}
+.search input{border:0;background:transparent;outline:none;width:100%;font-size:15px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--rule);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:5px 11px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip .n{opacity:.7;font-weight:600;margin-left:4px;font-variant-numeric:tabular-nums}
+
+/* Feed */
+.sec-title{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.sec-title h2{font-family:var(--display);font-size:26px;margin:0;font-weight:700}
+.sec-title small{font-size:13px;color:var(--muted);font-weight:600}
+.list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+article{position:relative;padding:16px 16px 14px 20px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+article::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--imp,var(--i2))}
+article.read{opacity:.6}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:12px}
+.sec{font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.imp{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--imp);text-transform:uppercase;letter-spacing:.06em}
+.bars{display:inline-flex;gap:2px;align-items:flex-end}
+.bars i{width:4px;border-radius:1px;background:var(--rule)}
+.bars i.on{background:var(--imp)}
+.when{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-weight:600}
+.when.old{background:var(--tint);border-radius:4px;padding:1px 6px}
+article h3{font-family:var(--display);font-size:21px;line-height:1.2;margin:0;text-wrap:balance;font-weight:600;cursor:pointer}
+article p{margin:0;max-width:65ch}
+.why{background:var(--why);border-radius:10px;padding:10px 12px;font-size:15px}
+.why b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.src{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px}
+.src a{color:var(--muted);text-underline-offset:2px}
+.src a:hover{color:var(--ink)}
+.acts{display:flex;flex-wrap:wrap;gap:6px}
+.sb{border:1px solid var(--rule);background:transparent;border-radius:8px;padding:5px 9px;font-size:12.5px;font-weight:700;cursor:pointer}
+.sb:hover{border-color:var(--ink)}
+.sb[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.panel{border-top:1px dashed var(--rule);padding-top:10px;font-size:15px;white-space:pre-wrap}
+.panel .lab{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--accent);margin-bottom:4px;white-space:normal}
+.panel .note{font-size:12px;color:var(--muted);margin-top:6px;white-space:normal}
+body.compact article p, body.compact article .why, body.compact article .foot{display:none}
+body.compact article.open p, body.compact article.open .why, body.compact article.open .foot{display:flex}
+body.compact article.open p{display:block}
+body.compact article h3{font-size:18px}
+.empty,.status{padding:18px;color:var(--muted);text-align:center}
+.status{margin:16px 0}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+.toast.show{opacity:1}
+
+.archive{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:32px;padding-top:16px;border-top:1px solid var(--rule);font-size:14px}
+.archive select{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--rule);background:var(--card);color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.fine{font-size:12.5px;color:var(--muted);margin-top:12px;max-width:65ch}
+@media (max-width:440px){ .logo{font-size:38px} article h3{font-size:19px} .seg button{padding:5px 9px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-row">
+      <h1 class="logo">Al <i>Día</i></h1>
+      <div style="display:flex;gap:6px">
+        <button class="btn" id="listen" type="button" hidden>▶ Escuchar</button>
+        <button class="btn" id="refresh" type="button">↻ Actualizar</button>
+      </div>
+    </div>
+    <div class="dateline">
+      <span class="live" id="live">Cargando…</span>
+      <b id="edlabel"></b>
+      <span id="edstats"></span>
+    </div>
+    <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+  </header>
+
+  <div id="status" class="card status" hidden></div>
+
+  <section id="hero" class="card hero" hidden></section>
+  <section id="ticker" class="ticker" aria-label="Indicadores"></section>
+
+  <section id="brief" class="card brief" hidden>
+    <div class="brief-head"><h3>En 60 segundos</h3><button class="sb" id="sharebrief" type="button">Copiar para WhatsApp</button></div>
+    <ol id="brieflist"></ol>
+  </section>
+
+  <section id="agenda" class="agenda" hidden>
+    <div class="eyebrow">Agenda · lo que viene</div>
+    <div class="row" id="agrow"></div>
+  </section>
+
+  <div class="tools" id="tools">
+    <div class="tools-row">
+      <label class="search" for="q"><span aria-hidden="true">⌕</span><input id="q" type="search" placeholder="Buscar en esta edición" autocomplete="off"></label>
+      <div class="seg" role="group" aria-label="Orden">
+        <button type="button" data-sort="imp" aria-pressed="true">Importancia</button>
+        <button type="button" data-sort="sec" aria-pressed="false">Secciones</button>
+      </div>
+    </div>
+    <div class="tools-row">
+      <div class="chips" id="chips" style="flex:1"></div>
+      <button class="chip" id="compact" type="button" aria-pressed="false" title="Ver solo titulares">Titulares</button>
+    </div>
+  </div>
+
+  <main id="feed"></main>
+
+  <div class="legend" aria-label="Escala de importancia">
+    <span><i style="background:var(--i5)"></i>5 Urgente</span>
+    <span><i style="background:var(--i4)"></i>4 Alta</span>
+    <span><i style="background:var(--i3)"></i>3 Media</span>
+    <span><i style="background:var(--i2)"></i>2 Baja</span>
+    <span><i style="background:var(--i1)"></i>1 Contexto</span>
+  </div>
+  <div class="archive">
+    <label for="edsel">Ediciones anteriores</label>
+    <select id="edsel"></select>
+  </div>
+  <p class="fine">Dos ediciones al día (6:16 a.m. y 6:16 p.m., hora Colombia), armadas con IA a partir de medios colombianos e internacionales. La fecha de cada nota es la de su publicación en la fuente; las de más de una semana se marcan como contexto. Abre la fuente antes de citar una cifra.</p>
+  <p class="fine" id="installtip">En iPhone: toca Compartir en Safari y luego "Agregar a pantalla de inicio" para tenerla como app.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const SECTIONS=[["colombia","Colombia"],["medellin","Medellín"],["mundo","Mundo"],["economia","Economía"],["tech","Tech e IA"],["marketing","Marketing"],["ciencia","Ciencia y salud"],["deportes","Deportes"],["cultura","Cultura"]];
+const SECNAME=Object.fromEntries(SECTIONS);
+const IMP={5:["Urgente","--i5"],4:["Alta","--i4"],3:["Media","--i3"],2:["Baja","--i2"],1:["Contexto","--i1"]};
+const MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const DIAS=["dom","lun","mar","mié","jue","vie","sáb"];
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const state={editions:[],current:null,filter:"todo",sort:store.get("aldia_sort","imp"),q:"",compact:store.get("aldia_compact",false),
+  read:new Set(store.get("aldia_read",[])),saved:store.get("aldia_saved",{}),panels:{},open:new Set(),sample:undefined};
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function safeUrl(u){try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:"#"}catch(e){return "#"}}
+function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),1800)}
+function imp(x){const n=Math.max(1,Math.min(5,Number(x.importance)||(x.top?4:2)));return n}
+function parseDay(s){if(!s)return null;const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);if(!m)return null;return new Date(+m[1],+m[2]-1,+m[3])}
+function dayDiff(d){const t=new Date();t.setHours(0,0,0,0);return Math.round((t-d)/864e5)}
+function whenLabel(s){
+  const d=parseDay(s); if(!d) return {txt:"Fecha sin confirmar",old:false};
+  const n=dayDiff(d); const f=`${d.getDate()} ${MESES[d.getMonth()]}`;
+  const hm=/T(\d{2}):(\d{2})/.exec(s); const hour=hm&&s.length>10?new Date(s).toLocaleTimeString("es-CO",{hour:"numeric",minute:"2-digit"}):"";
+  if(n<=0) return {txt:`Hoy${hour?" · "+hour:""}`,old:false};
+  if(n===1) return {txt:`Ayer · ${f}`,old:false};
+  if(n<7) return {txt:`Hace ${n} días · ${f}`,old:false};
+  return {txt:`Contexto · ${f}${d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():""}`,old:true};
+}
+function ago(iso){const t=Date.parse(iso);if(!t)return{txt:"",stale:false};const m=Math.max(0,Math.round((Date.now()-t)/6e4));
+  return{txt:m<60?`hace ${m} min`:m<2880?`hace ${Math.round(m/60)} h`:`hace ${Math.round(m/1440)} días`,stale:m>14*60}}
+function words(ed){return (ed.articles||[]).reduce((a,x)=>a+`${x.headline} ${x.summary} ${x.why}`.split(/\s+/).length,0)}
+
+function spark(series){
+  const s=(series||[]).map(Number).filter(v=>isFinite(v)); if(s.length<2) return "";
+  const W=84,H=30,p=3,min=Math.min(...s),max=Math.max(...s),r=max-min||1;
+  const pts=s.map((v,i)=>[p+i*(W-2*p)/(s.length-1),H-p-(v-min)*(H-2*p)/r]);
+  const line=pts.map(q=>q.map(n=>n.toFixed(1)).join(",")).join(" ");
+  const area=`${p},${H-p} ${line} ${W-p},${H-p}`; const last=pts[pts.length-1];
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" aria-hidden="true"><polygon points="${area}" fill="var(--accent)" opacity=".12"/><polyline points="${line}" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round"/><circle cx="${last[0]}" cy="${last[1]}" r="2.6" fill="var(--accent)"/></svg>`;
+}
+
+function keyOf(ed,x){return ed.id+":"+x.id}
+function sortArts(list){return [...list].sort((a,b)=>imp(b)-imp(a)||String(b.publishedAt||"").localeCompare(String(a.publishedAt||"")))}
+
+function renderHead(){
+  const ed=state.current,a=ago(ed.createdAt),arts=ed.articles||[];
+  $("live").textContent=a.stale?`Edición de ${a.txt} · puede estar vieja`:`Actualizado ${a.txt}`;
+  $("live").classList.toggle("stale",a.stale);
+  $("edlabel").textContent=`${ed.label||""} · ${ed.dateLabel||""}`;
+  const r=arts.filter(x=>state.read.has(keyOf(ed,x))).length;
+  $("edstats").textContent=`${arts.length} noticias · ~${Math.max(1,Math.round(words(ed)/220))} min · ${r} leídas`;
+  $("prog").style.width=arts.length?`${Math.round(100*r/arts.length)}%`:"0";
+}
+
+function renderTop(){
+  const ed=state.current,arts=ed.articles||[];
+  const heroA=sortArts(arts)[0]; state.heroId=heroA&&heroA.id;
+  if(heroA){const w=whenLabel(heroA.publishedAt),n=imp(heroA);
+    $("hero").style.borderTopColor=`var(${IMP[n][1]})`;
+    $("hero").innerHTML=`<div class="meta" style="--imp:var(${IMP[n][1]})"><span class="eyebrow" style="color:var(--accent)">Portada</span><span class="sec">${esc(SECNAME[heroA.section]||"")}</span>${impHTML(n)}<span class="when">${esc(w.txt)}</span></div>
+      <h2>${esc(heroA.headline)}</h2><p>${esc(heroA.summary)}</p>${heroA.why?`<div class="why"><b>Por qué te importa</b>${esc(heroA.why)}</div>`:""}
+      <div class="src">${(heroA.sources||[]).map(s=>`<a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">${esc(s.name)} ↗</a>`).join("")}</div>`;
+    $("hero").hidden=false;} else $("hero").hidden=true;
+
+  $("ticker").innerHTML=(ed.indicators||[]).map(i=>`<div class="card tick"><span class="eyebrow l">${esc(i.label)}</span><span class="v">${esc(i.value)}</span>${spark(i.series)}<span class="c ${i.dir==="up"?"up":i.dir==="down"?"down":""}">${esc(i.change||"")}${i.seriesLabel?` · ${esc(i.seriesLabel)}`:""}</span></div>`).join("");
+
+  const b=ed.brief||[]; $("brieflist").innerHTML=b.map(x=>`<li><span>${esc(x)}</span></li>`).join("");
+  $("brief").hidden=!b.length;
+  $("listen").hidden=!("speechSynthesis" in window)||!b.length;
+
+  const today=new Date();today.setHours(0,0,0,0);
+  const ag=(ed.agenda||[]).filter(e=>{const d=parseDay(e.date);return d&&d>=today}).sort((a,b)=>a.date.localeCompare(b.date));
+  $("agrow").innerHTML=ag.map(e=>{const d=parseDay(e.date),n=dayDiff(d);const rel=n===0?"Hoy":n===-1?"Mañana":`En ${-n} días`;
+    return `<div class="card ag"><div class="d"><span class="dn">${d.getDate()}</span><span class="dm">${MESES[d.getMonth()]}</span><span class="dw">${rel}</span></div><div class="t">${esc(e.title)}</div>${e.note?`<div class="n">${esc(e.note)}</div>`:""}</div>`}).join("");
+  $("agenda").hidden=!ag.length;
+}
+
+function impHTML(n){return `<span class="imp" style="--imp:var(${IMP[n][1]})"><span class="bars" aria-hidden="true">${[1,2,3,4,5].map(i=>`<i class="${i<=n?"on":""}" style="height:${4+i*2}px"></i>`).join("")}</span>${IMP[n][0]}</span>`}
+
+function renderChips(){
+  const ed=state.current,arts=ed.articles||[],c={};arts.forEach(x=>c[x.section]=(c[x.section]||0)+1);
+  const unread=arts.filter(x=>!state.read.has(keyOf(ed,x))).length, nsaved=Object.keys(state.saved).length;
+  const list=[["todo","Todo",arts.length],["alta","Importantes",arts.filter(x=>imp(x)>=4).length],["noleidas","Sin leer",unread],["guardadas","Guardadas",nsaved],...SECTIONS.filter(([k])=>c[k]).map(([k,n])=>[k,n,c[k]])];
+  $("chips").innerHTML=list.map(([k,n,v])=>`<button class="chip" type="button" data-k="${k}" aria-pressed="${state.filter===k}">${esc(n)}<span class="n">${v}</span></button>`).join("");
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sort===state.sort)));
+  $("compact").setAttribute("aria-pressed",String(state.compact)); document.body.classList.toggle("compact",state.compact);
+}
+
+function artHTML(ed,x){
+  const k=keyOf(ed,x),n=imp(x),w=whenLabel(x.publishedAt),rd=state.read.has(k),sv=!!state.saved[k],p=state.panels[k];
+  return `<article class="card ${rd?"read":""} ${state.open.has(k)?"open":""}" data-key="${esc(k)}" style="--imp:var(${IMP[n][1]})">
+    <div class="meta"><span class="sec">${esc(SECNAME[x.section]||x.section)}</span>${impHTML(n)}<span class="when ${w.old?"old":""}">🕑 ${esc(w.txt)}</span></div>
+    <h3 data-act="toggle">${esc(x.headline)}</h3>
+    <p>${esc(x.summary)}</p>
+    ${x.why?`<div class="why"><b>Por qué te importa</b>${esc(x.why)}</div>`:""}
+    <div class="foot">
+      <div class="src">${(x.sources||[]).map(s=>`<a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener">${esc(s.name)} ↗</a>`).join("")}</div>
+      <div class="acts">
+        ${state.sample?`<button class="sb" type="button" data-act="explain">Explícame</button><button class="sb" type="button" data-act="idea">Idea de contenido</button>`:""}
+        <button class="sb" type="button" data-act="copy">Copiar</button>
+        <button class="sb" type="button" data-act="save" aria-pressed="${sv}">${sv?"★ Guardada":"☆ Guardar"}</button>
+        <button class="sb" type="button" data-act="read" aria-pressed="${rd}">${rd?"Leída ✓":"Leída"}</button>
+      </div>
+    </div>
+    ${p?`<div class="panel"><span class="lab">${p.kind==="idea"?"Idea de contenido":"Contexto"}</span>${esc(p.text||"Pensando…")}${p.done?'<div class="note">Generado por Claude a partir de esta nota. Verifica en las fuentes.</div>':""}</div>`:""}
+  </article>`;
+}
+
+function findArt(k){const [e,a]=k.split(":");const ed=state.editions.find(x=>x.id===e)||(state.saved[k]&&{id:e,dateLabel:state.saved[k].dateLabel});
+  const x=ed&&((ed.articles||[]).find(y=>y.id===a)||(state.saved[k]&&state.saved[k].a));return {ed,x}}
+
+function renderFeed(){
+  const ed=state.current; let arts=ed.articles||[]; const q=state.q.trim().toLowerCase(); const f=state.filter;
+  let html="";
+  if(f==="guardadas"){
+    const items=Object.entries(state.saved).sort((a,b)=>(b[1].t||0)-(a[1].t||0)).map(([k,v])=>({ed:{id:k.split(":")[0],dateLabel:v.dateLabel},x:v.a}))
+      .filter(({x})=>!q||`${x.headline} ${x.summary}`.toLowerCase().includes(q));
+    $("feed").innerHTML=items.length?`<div class="list">${items.map(({ed,x})=>artHTML(ed,x)).join("")}</div>`:`<div class="card empty">Aún no guardas noticias. Toca ☆ Guardar en las que quieras tener a mano.</div>`;return;
+  }
+  if(q) arts=arts.filter(x=>`${x.headline} ${x.summary} ${x.why}`.toLowerCase().includes(q));
+  if(f==="alta") arts=arts.filter(x=>imp(x)>=4);
+  else if(f==="noleidas") arts=arts.filter(x=>!state.read.has(keyOf(ed,x)));
+  else if(f!=="todo") arts=arts.filter(x=>x.section===f);
+  if(f==="todo"&&!q) arts=arts.filter(x=>x.id!==state.heroId);
+  if(!arts.length){$("feed").innerHTML=`<div class="card empty">${f==="noleidas"?"Leíste todo. La próxima edición llega a las 6:16.":"No hay noticias con ese filtro."}</div>`;return}
+  if(state.sort==="sec"&&(f==="todo"||f==="alta"||f==="noleidas")){
+    for(const [k,n] of SECTIONS){const l=sortArts(arts.filter(x=>x.section===k));if(!l.length)continue;
+      html+=`<div class="sec-title"><h2>${esc(n)}</h2><small>${l.length}</small></div><div class="list">${l.map(x=>artHTML(ed,x)).join("")}</div>`}
+  } else html=`<div class="list">${sortArts(arts).map(x=>artHTML(ed,x)).join("")}</div>`;
+  $("feed").innerHTML=html;
+}
+
+function renderAll(){ if(!state.current)return; renderHead(); renderTop(); renderChips(); renderFeed();
+  $("edsel").innerHTML=state.editions.map(e=>`<option value="${esc(e.id)}" ${e.id===state.current.id?"selected":""}>${esc(e.dateLabel)} · ${esc(e.label)}</option>`).join("") }
+function rerenderList(){ renderHead(); renderChips(); renderFeed(); }
+
+/* ---- Eventos ---- */
+document.addEventListener("click",ev=>{
+  const chip=ev.target.closest(".chip[data-k]");
+  if(chip){state.filter=chip.dataset.k;rerenderList();$("tools").scrollIntoView({block:"start"});return}
+  const sortB=ev.target.closest(".seg button");
+  if(sortB){state.sort=sortB.dataset.sort;store.set("aldia_sort",state.sort);rerenderList();return}
+  const el=ev.target.closest("[data-act]"); if(!el)return;
+  const art=el.closest("article"); if(!art)return; const k=art.dataset.key; const act=el.dataset.act;
+  if(act==="toggle"){state.open.has(k)?state.open.delete(k):state.open.add(k);art.classList.toggle("open");return}
+  if(act==="read"){state.read.has(k)?state.read.delete(k):state.read.add(k);store.set("aldia_read",[...state.read].slice(-800));rerenderList();return}
+  if(act==="save"){ if(state.saved[k]) delete state.saved[k]; else {const {ed,x}=findArt(k); if(x) state.saved[k]={a:x,dateLabel:ed.dateLabel,t:Date.now()}; toast("Guardada")}
+    store.set("aldia_saved",state.saved);rerenderList();return}
+  if(act==="copy"){const {x}=findArt(k); if(!x)return; const txt=`${x.headline}\n\n${x.summary}\n\nPor qué importa: ${x.why||""}\n${(x.sources||[]).map(s=>`${s.name}: ${s.url}`).join("\n")}`;
+    navigator.clipboard.writeText(txt).then(()=>toast("Copiada, lista para pegar")).catch(()=>toast("No se pudo copiar"));return}
+  if(act==="explain"||act==="idea") ask(k,act);
+});
+$("sharebrief").addEventListener("click",()=>{const ed=state.current;if(!ed)return;
+  const top=sortArts(ed.articles||[]).slice(0,3);
+  const txt=`📰 *Al Día* · ${ed.label} · ${ed.dateLabel}\n\n${(ed.brief||[]).map((b,i)=>`${i+1}. ${b}`).join("\n")}\n\nPara leer más:\n${top.map(x=>`• ${x.headline}: ${(x.sources&&x.sources[0]&&x.sources[0].url)||""}`).join("\n")}`;
+  navigator.clipboard.writeText(txt).then(()=>toast("Copiado: pégalo en WhatsApp")).catch(()=>toast("No se pudo copiar"))});
+$("compact").addEventListener("click",()=>{state.compact=!state.compact;store.set("aldia_compact",state.compact);renderChips()});
+$("q").addEventListener("input",e=>{state.q=e.target.value;renderFeed()});
+$("edsel").addEventListener("change",e=>openEdition(e.target.value));
+$("listen").addEventListener("click",()=>{
+  try{const s=window.speechSynthesis; if(s.speaking){s.cancel();$("listen").textContent="▶ Escuchar";return}
+    const ed=state.current; const u=new SpeechSynthesisUtterance(`Al Día. ${ed.label}, ${ed.dateLabel}. ${(ed.brief||[]).join(". ")}`);
+    u.lang="es-CO"; u.rate=1.02; u.onend=()=>{$("listen").textContent="▶ Escuchar"}; s.speak(u); $("listen").textContent="■ Detener";
+  }catch(e){toast("Tu navegador no permite leer en voz alta")}
+});
+
+/* ---- Claude: contexto e ideas ---- */
+async function ask(k,kind){
+  if(!state.sample)return;
+  const cur=state.panels[k]; if(cur&&cur.kind===kind&&!cur.error){delete state.panels[k];renderFeed();return}
+  const {ed,x}=findArt(k); if(!x)return;
+  state.panels[k]={kind,text:"",done:false}; renderFeed();
+  const base=`Fecha de la edición: ${ed.dateLabel}\nSección: ${SECNAME[x.section]||x.section}\nTitular: ${x.headline}\nResumen: ${x.summary}\nPor qué importa: ${x.why||""}\nFuentes: ${(x.sources||[]).map(s=>s.name).join(", ")}`;
+  const prompt = kind==="idea"
+    ? `Eres estratega de contenido para negocios locales de Medellín (belleza, bienestar, servicios). A partir de esta noticia propone UNA idea de contenido para Instagram que sea oportuna y no oportunista. Formato exacto, en español, máximo 110 palabras:\nFormato: (Reel, carrusel o historia)\nGancho: (primera frase, máx. 12 palabras)\nÁngulo: (1–2 frases conectando la noticia con el negocio)\nCopy: (2 líneas)\nCTA: (1 línea)\nSi la noticia es sensible (violencia, tragedia, escándalo sexual, guerra), no la uses para vender: responde solo "Mejor no: tema sensible para marcas" y una frase de por qué.\nNo inventes datos que no estén en la nota.\n\n${base}`
+    : `Eres editor de un briefing de noticias para un lector colombiano joven. Explica en español, máximo 140 palabras, en 3 párrafos cortos sin títulos: 1) antecedentes para entender la noticia, 2) qué está en juego, 3) qué vigilar en los próximos días. No inventes cifras, fechas ni declaraciones que no estén en la nota; si algo no está claro, dilo.\n\n${base}`;
+  try{
+    const r=await state.sample(prompt,{modelTier:"quick",onText:({text})=>{state.panels[k].text=text;renderFeed()}});
+    state.panels[k]={kind,text:r.text,done:true};
+  }catch(e){
+    state.panels[k]={kind,error:true,text:e&&e.code==="rate_limited"?"Demasiadas solicitudes seguidas. Espera un minuto.":e&&e.code==="not_granted"?"Esta vista no tiene permiso para preguntarle a Claude.":"No se pudo generar. Intenta de nuevo."};
+  }
+  renderFeed();
+}
+
+/* ---- Datos ---- */
+function applySnap(snap){
+  const list=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>Array.isArray(e.articles));
+  const keep=state.current&&state.current.id; const wasLatest=!keep||(state.editions[0]&&keep===state.editions[0].id)||!list.find(e=>e.id===keep);
+  state.editions=list;
+  if(!list.length){showStatus("Todavía no hay ediciones guardadas. La primera aparecerá aquí apenas se publique.");return}
+  showStatus(""); state.current=wasLatest?list[0]:list.find(e=>e.id===keep);
+  if(!wasLatest&&list[0].id!==keep) toast("Hay una edición nueva: elígela abajo");
+  renderAll();
+}
+function showStatus(m){const s=$("status");if(m){s.textContent=m;s.hidden=false}else s.hidden=true}
+
+/* ---- Versión pública: lee archivos JSON del mismo sitio ---- */
+async function getJSON(p){const r=await fetch(`${p}?t=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
+async function loadPublic(keepCurrent){
+  const idx=await getJSON("data/index.json");
+  const list=(idx.editions||[]).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  if(!list.length){showStatus("Todavía no hay ediciones publicadas.");return}
+  const loaded=[];
+  for(const m of list){const have=state.editions.find(e=>e.id===m.id&&e.createdAt===m.createdAt);loaded.push(have||{...m,articles:null})}
+  const latest=loaded[0]; if(!latest.articles) Object.assign(latest,await getJSON(`data/editions/${latest.id}.json`),{id:latest.id});
+  const keep=keepCurrent&&state.current&&loaded.find(e=>e.id===state.current.id&&e.articles);
+  state.editions=loaded; state.current=keep||latest; showStatus(""); renderAll();
+}
+async function openEdition(id){const ed=state.editions.find(e=>e.id===id);if(!ed)return;
+  if(!ed.articles){try{Object.assign(ed,await getJSON(`data/editions/${id}.json`),{id})}catch(e){toast("No se pudo abrir esa edición");return}}
+  state.current=ed;state.filter="todo";renderAll();window.scrollTo({top:0})}
+$("refresh").addEventListener("click",async()=>{const b=$("refresh");b.disabled=true;b.textContent="Buscando…";
+  try{await loadPublic(false);toast("Tienes la edición más reciente")}catch(e){showStatus("No se pudo cargar. Revisa tu conexión e intenta otra vez.")}
+  b.disabled=false;b.textContent="↻ Actualizar"});
+(async function initPublic(){
+  document.body.classList.toggle("compact",state.compact); state.sample=null;
+  try{await loadPublic(false)}catch(e){showStatus("No se pudieron cargar las noticias. Revisa tu conexión y toca Actualizar.");$("live").textContent="Sin datos"}
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")loadPublic(true).catch(()=>{})});
+  if(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)$("installtip").hidden=true;
+})();
+
+setInterval(()=>{if(state.current)renderHead()},60000);
+</script>
+</body>
+</html>
